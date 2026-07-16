@@ -32,3 +32,15 @@ IMPORTANTE
 - El NITS incluido en esta versión funciona localmente mediante reglas y biblioteca de redacción.
 - La mejora avanzada en línea y la sincronización con el Libro Maestro quedan para una fase posterior.
 - Generar el Word NO borra la visita. La información permanece hasta que se elimine manualmente.
+
+
+V2.1 CORRECCIONES:
+- Icono GS Asistente actualizado.
+- CD en mayúsculas alfanuméricas.
+- kVA mediante lista desplegable.
+- Estado asignado únicamente por NITS.
+- GPS reubicado debajo de coordenadas.
+- Eliminada opción Mixta redundante.
+- Dictado continuo con indicador visual.
+- Nombres propios y siglas normalizados.
+- Plantilla Word ajustada con KPI, tabla técnica y registro fotográfico.
