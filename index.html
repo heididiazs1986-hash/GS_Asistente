@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#d40000">
+  <meta name="description" content="Asistente offline para visitas de Gestión Social">
+  <title>GS Asistente</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="brand-row">
+    <img class="brand-logo" src="gs-logo.png" alt="Gestión Social">
+    <div><h1>GS Asistente</h1><p>Gestión Social en campo</p></div>
+    <div class="header-actions"><span class="offline-badge">● Offline</span><button id="themeBtn" class="icon-btn" aria-label="Cambiar tema">☾</button></div>
+  </div>
+</header>
+<main>
+  <section id="homeScreen" class="screen active">
+    <div class="hero card hero-pro">
+      <span class="eyebrow">GESTIÓN SOCIAL</span>
+      <h2>📍 ¿Qué territorio visitarás hoy?</h2>
+      <p>Registra el recorrido, conserva la información y construye el informe cuando tengas lo necesario.</p>
+      <div class="hero-actions"><button id="newVisitBtn" class="primary big">＋ Nueva visita</button><button id="goSavedBtn" class="secondary big">↻ Continuar visita</button></div>
+    </div>
+    <div class="home-stats"><div class="stat-card"><span>Visitas activas</span><strong id="activeVisitsCount">0</strong></div><div class="stat-card"><span>Informes generados</span><strong id="reportsCount">0</strong></div><div class="stat-card"><span>Pendientes</span><strong id="pendingCount">0</strong></div></div>
+    <div class="card saved-card">
+      <div class="section-head"><div><h3>Visitas guardadas</h3><p>Se conservan aunque abras otra visita o cierres la aplicación.</p></div><button id="importBtn" class="secondary small">Importar respaldo</button></div>
+      <input id="importFile" type="file" accept="application/json" hidden>
+      <div id="visitList" class="visit-list"></div>
+    </div>
+  </section>
+
+  <section id="visitScreen" class="screen">
+    <div class="visit-top card compact">
+      <button id="backHomeBtn" class="secondary">← Inicio</button>
+      <div class="visit-title"><span id="visitStatus" class="status in-progress">En progreso</span><h2 id="visitHeading">Visita</h2><p id="visitIdLabel"></p></div>
+      <button id="previewBtn" class="primary">Vista previa</button>
+    </div>
+
+    <div class="progress-nav" id="progressNav">
+      <button data-go="generalCard">1 Datos</button><button data-go="areasCard">2 Áreas</button><button data-go="infraCard">3 Infraestructura</button><button data-go="territoryCard">4 Territorio</button><button data-go="managementCard">5 Gestión</button><button data-go="findingsCard">6 Hallazgos</button><button data-go="photosCard">7 Fotografías</button><button data-go="peopleCard">8 Personas</button><button data-go="pendingCard">9 Pendientes</button>
+    </div>
+
+    <article id="generalCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">1</span><h3>Datos de la visita</h3></div><span class="autosave">● Guardado automático</span></div>
+      <div class="grid three">
+        <div><label>ID</label><input id="visitId" readonly></div>
+        <div><label>Fecha</label><input id="visitDate" type="date"></div>
+        <div><label>Hora de inicio</label><input id="visitStart" type="time"></div>
+        <div><label>Sede *</label><select id="sede"></select></div>
+        <div><label>Municipio *</label><select id="municipio"></select></div>
+        <div><label>Zona *</label><select id="zona"><option value="">Selecciona…</option><option>Rural</option><option>Urbana</option></select></div>
+        
+      </div>
+    </article>
+
+    <article id="areasCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">2</span><h3>Áreas recorridas</h3></div><button id="addAreaBtn" class="primary small">＋ Agregar área</button></div>
+      <p class="hint">El área activa se asigna automáticamente a los CD, hallazgos, contactos y pendientes que registres.</p>
+      <div id="areasList" class="stack-list"></div>
+    </article>
+
+    <article id="infraCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">3</span><h3>Diagnóstico de infraestructura</h3></div><button id="addCdBtn" class="primary small">＋ Registrar CD</button></div>
+      <p class="hint">Evaluación general por CD. No reemplaza GS Diagnósticos.</p>
+      <div id="cdList" class="stack-list"></div>
+    </article>
+
+    <article id="territoryCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">4</span><h3>Radiografía social y territorial</h3></div></div>
+      <p class="hint">Puedes marcar varias opciones. El NITS usa estas selecciones para redactar el contexto del territorio.</p>
+      <div id="territoryChecks"></div>
+      <div class="dict-wrap"><label>Observaciones generales del territorio</label><textarea id="territoryObs" placeholder="Escribe o dicta lo que observaste…"></textarea><button class="mic-btn" data-target="territoryObs">🎤</button></div>
+    </article>
+
+    <article id="managementCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">5</span><h3>Gestión social realizada</h3></div></div>
+      <p class="hint">Selecciona los temas tratados. Las observaciones ayudan al NITS a modelar una narrativa natural.</p>
+      <div id="managementChecks"></div>
+      <div class="dict-wrap"><label>Observaciones sobre la reunión o gestión</label><textarea id="managementObs" placeholder="Ej.: Se informó que primero debe intervenir el área de Redes…"></textarea><button class="mic-btn" data-target="managementObs">🎤</button></div>
+      <div class="grid two"><div><label>Próxima gestión prevista (opcional)</label><input id="nextAction" placeholder="Ej.: Reunión para gestión documental después de Redes"></div><div><label>¿Se realizó reunión con comunidad?</label><select id="communityMeeting"><option>No</option><option>Sí</option></select></div></div>
+    </article>
+
+    <article id="findingsCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">6</span><h3>Hallazgos identificados</h3></div><button id="addFindingBtn" class="primary small">＋ Agregar hallazgo</button></div>
+      <p class="hint">Describe libremente hallazgos sociales, ambientales, prediales, de acceso, institucionales o comunitarios. El NITS los clasificará. Los hallazgos técnicos van exclusivamente en infraestructura.</p>
+      <div id="findingList" class="stack-list"></div>
+    </article>
+
+
+    <article id="photosCard" class="card form-card photo-review-card">
+      <div class="section-head"><div><span class="number-box">7</span><h3>Registro fotográfico</h3></div><button id="addPhotoFindingBtn" class="primary small">＋ Agregar fotografías</button></div>
+      <p class="hint">Revisa aquí todas las imágenes vinculadas a los hallazgos antes de abrir la vista previa y generar el Word.</p>
+      <div id="visitPhotoGallery" class="visit-photo-gallery"></div>
+    </article>
+
+    <article id="peopleCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">8</span><h3>Personas y contactos</h3></div><button id="addPersonBtn" class="primary small">＋ Agregar contacto</button></div>
+      <p class="hint">Opcional. Úsalo cuando encuentres líderes, habitantes o responsables que aporten información.</p>
+      <div id="peopleList" class="stack-list"></div>
+    </article>
+
+    <article id="pendingCard" class="card form-card">
+      <div class="section-head"><div><span class="number-box">9</span><h3>Pendientes</h3></div><button id="addPendingBtn" class="primary small">＋ Agregar pendiente</button></div>
+      <p class="hint">Puede quedar sin fecha. Si defines una fecha, puedes descargar un archivo de calendario con alerta.</p>
+      <div id="pendingList" class="stack-list"></div>
+    </article>
+
+    <div class="sticky-actions">
+      <button id="exportBackupBtn" class="secondary">Exportar respaldo</button>
+      <button id="previewBottomBtn" class="primary">Vista previa del informe</button>
+    </div>
+  </section>
+
+  <section id="previewScreen" class="screen">
+    <div class="preview-toolbar"><button id="backVisitBtn" class="secondary">← Editar visita</button><div><span class="eyebrow">DOCUMENTO</span><h2>Vista previa del informe</h2><p>Revisa fotografías, contenido y tablas antes de generar el Word.</p></div><button id="generateWordBtn" class="primary">⬇ Generar Word</button></div>
+    <div id="previewDocument" class="paper-preview"></div>
+  </section>
+</main>
+
+<div id="modal" class="modal-back"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Registro</h3><button id="closeModalBtn" class="icon-close">×</button></div><div id="modalBody"></div></div></div>
+<div id="imageEditor" class="modal-back"><div class="modal-card editor-card"><div class="modal-head"><h3>Marcar imagen</h3><button id="closeEditorBtn" class="icon-close">×</button></div><canvas id="editCanvas"></canvas><div class="editor-tools"><label>Grosor <input id="brushSize" type="range" min="2" max="16" value="5"></label><button id="clearDrawingBtn" class="secondary">Restaurar</button><button id="saveDrawingBtn" class="primary">Guardar marcas</button></div></div></div>
+<div id="toast" class="toast"></div>
+<script src="vendor-docx.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
